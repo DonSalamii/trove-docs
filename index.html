@@ -1,0 +1,641 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Using Trove</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap">
+
+<style>
+  /* ---------- tokens: light is the bare :root ---------- */
+  :root {
+    --ink:        #101a2e;
+    --ink-soft:   #43506b;
+    --ink-faint:  #6b7891;
+    --paper:      #fbfcfe;
+    --surface:    #ffffff;
+    --line:       #dde3ed;
+    --line-soft:  #eaeef5;
+    --navy:       #172b4d;
+    --green:      #1f8a5f;
+    --green-wash: #e8f5ef;
+    --amber:      #9a6206;
+    --amber-wash: #fbf1de;
+
+    --measure: 66ch;
+    --radius: 10px;
+
+    --step--1: clamp(0.82rem, 0.80rem + 0.10vw, 0.88rem);
+    --step-0:  clamp(1.00rem, 0.97rem + 0.16vw, 1.09rem);
+    --step-1:  clamp(1.22rem, 1.15rem + 0.32vw, 1.42rem);
+    --step-2:  clamp(1.55rem, 1.40rem + 0.70vw, 2.05rem);
+    --step-3:  clamp(2.10rem, 1.80rem + 1.40vw, 3.10rem);
+
+    color-scheme: light;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink:        #e7ecf5;
+      --ink-soft:   #a9b4c8;
+      --ink-faint:  #7c8798;
+      --paper:      #0d1420;
+      --surface:    #141d2b;
+      --line:       #26313f;
+      --line-soft:  #1c2532;
+      --navy:       #cfd9e8;
+      --green:      #4cc38a;
+      --green-wash: #14291f;
+      --amber:      #d9a441;
+      --amber-wash: #2a2313;
+      color-scheme: dark;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ink:        #e7ecf5;
+    --ink-soft:   #a9b4c8;
+    --ink-faint:  #7c8798;
+    --paper:      #0d1420;
+    --surface:    #141d2b;
+    --line:       #26313f;
+    --line-soft:  #1c2532;
+    --navy:       #cfd9e8;
+    --green:      #4cc38a;
+    --green-wash: #14291f;
+    --amber:      #d9a441;
+    --amber-wash: #2a2313;
+    color-scheme: dark;
+  }
+
+  /* ---------- base ---------- */
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: var(--step-0);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 clamp(1.25rem, 4vw, 3rem) 6rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  @media (min-width: 950px) {
+    .wrap {
+      grid-template-columns: 210px minmax(0, 1fr);
+      align-items: start;
+      gap: 4rem;
+    }
+  }
+
+  /* ---------- masthead ---------- */
+  .masthead {
+    grid-column: 1 / -1;
+    padding: clamp(3rem, 8vw, 5.5rem) 0 clamp(2rem, 4vw, 3rem);
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .mark {
+    width: 38px;
+    height: 38px;
+    flex: none;
+    border-radius: 9px;
+    background: var(--navy);
+    display: grid;
+    place-items: center;
+  }
+
+  :root[data-theme="dark"] .mark,
+  :root:not([data-theme="light"]) .mark { background: #172b4d; }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) .mark { background: var(--navy); }
+  }
+
+  .mark svg { display: block; }
+
+  .brand-name {
+    font-family: "IBM Plex Sans", sans-serif;
+    font-weight: 600;
+    font-size: var(--step--1);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  h1 {
+    font-family: Literata, Georgia, "Times New Roman", serif;
+    font-weight: 600;
+    font-size: var(--step-3);
+    line-height: 1.08;
+    letter-spacing: -0.015em;
+    margin: 0;
+    text-wrap: balance;
+    max-width: 18ch;
+  }
+
+  .standfirst {
+    font-size: var(--step-1);
+    line-height: 1.5;
+    color: var(--ink-soft);
+    max-width: 52ch;
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  /* ---------- side nav ---------- */
+  nav.toc { display: none; }
+
+  @media (min-width: 950px) {
+    nav.toc {
+      display: block;
+      position: sticky;
+      top: 2.5rem;
+      padding-top: 3rem;
+    }
+    nav.toc ol {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      border-left: 1px solid var(--line);
+    }
+    nav.toc a {
+      display: block;
+      padding: 0.1rem 0 0.1rem 1rem;
+      margin-left: -1px;
+      border-left: 2px solid transparent;
+      font-size: var(--step--1);
+      color: var(--ink-faint);
+      text-decoration: none;
+      line-height: 1.35;
+    }
+    nav.toc a:hover,
+    nav.toc a:focus-visible {
+      color: var(--ink);
+      border-left-color: var(--green);
+    }
+  }
+
+  /* ---------- article ---------- */
+  article { padding-top: 3rem; min-width: 0; }
+
+  section + section { margin-top: 3.5rem; }
+
+  h2 {
+    font-family: Literata, Georgia, serif;
+    font-weight: 600;
+    font-size: var(--step-2);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    margin: 0 0 1rem;
+    text-wrap: balance;
+    scroll-margin-top: 2rem;
+  }
+
+  h3 {
+    font-family: "IBM Plex Sans", sans-serif;
+    font-weight: 600;
+    font-size: var(--step-0);
+    margin: 2rem 0 0.5rem;
+    color: var(--ink);
+  }
+
+  p, li { max-width: var(--measure); }
+  p { margin: 0 0 1rem; text-wrap: pretty; }
+
+  ul { padding-left: 1.15rem; margin: 0 0 1rem; }
+  li { margin-bottom: 0.5rem; }
+  li::marker { color: var(--ink-faint); }
+
+  strong { font-weight: 600; }
+
+  a { color: var(--green); text-underline-offset: 2px; }
+
+  code {
+    font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.88em;
+    background: var(--line-soft);
+    padding: 0.12em 0.38em;
+    border-radius: 4px;
+  }
+
+  /* ---------- the one accent: the product's thesis ---------- */
+  .thesis {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--green);
+    border-radius: var(--radius);
+    padding: 1.5rem 1.6rem;
+    margin: 1.5rem 0;
+    max-width: var(--measure);
+  }
+  .thesis p:last-child { margin-bottom: 0; }
+
+  .hit {
+    background: var(--green-wash);
+    color: var(--green);
+    font-weight: 500;
+    padding: 0.08em 0.3em;
+    border-radius: 3px;
+  }
+
+  .demo {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: var(--step--1);
+    line-height: 1.7;
+    color: var(--ink-soft);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1.1rem 1.25rem;
+    margin: 1.25rem 0;
+    max-width: var(--measure);
+    overflow-x: auto;
+  }
+  .demo .q { color: var(--ink); font-weight: 500; }
+  .demo .tag {
+    color: var(--ink-faint);
+  }
+
+  /* ---------- callout ---------- */
+  .note {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    padding: 1.15rem 1.3rem;
+    margin: 1.5rem 0;
+    max-width: var(--measure);
+    font-size: var(--step--1);
+    color: var(--ink-soft);
+  }
+  .note p:last-child { margin-bottom: 0; }
+  .note strong { color: var(--ink); }
+
+  .note.limits { border-left: 3px solid var(--amber); background: var(--amber-wash); }
+  :root[data-theme="dark"] .note.limits,
+  :root:not([data-theme="light"]) .note.limits { color: var(--ink-soft); }
+
+  /* ---------- table ---------- */
+  .table-scroll { overflow-x: auto; max-width: var(--measure); margin: 1.25rem 0; }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: var(--step--1);
+  }
+  th, td {
+    text-align: left;
+    padding: 0.6rem 1rem 0.6rem 0;
+    border-bottom: 1px solid var(--line-soft);
+    vertical-align: top;
+  }
+  th {
+    font-weight: 600;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    font-size: 0.72rem;
+    border-bottom-color: var(--line);
+  }
+  td:first-child {
+    font-family: "IBM Plex Mono", monospace;
+    color: var(--ink);
+    white-space: nowrap;
+    padding-right: 1.5rem;
+  }
+
+  /* ---------- footer ---------- */
+  footer {
+    grid-column: 1 / -1;
+    margin-top: 5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--line);
+    color: var(--ink-faint);
+    font-size: var(--step--1);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 2rem;
+    justify-content: space-between;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 3px;
+    border-radius: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  }
+
+  html { scroll-behavior: smooth; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="brand">
+      <span class="mark" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 512 512" fill="none">
+          <circle cx="226" cy="226" r="150" fill="#ffffff"/>
+          <circle cx="226" cy="226" r="110" fill="#172b4d"/>
+          <path d="M164 230 L210 278 L294 176" stroke="#36B37E" stroke-width="38" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <path d="M322 322 L430 430" stroke="#ffffff" stroke-width="56" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="brand-name">Trove for Confluence</span>
+    </div>
+
+    <h1>Ask, answer, and actually find it later</h1>
+
+    <p class="standfirst">
+      Trove keeps your team&rsquo;s questions and answers as ordinary Confluence pages and comments &mdash;
+      so search reads them, export includes them, and nothing is trapped inside an app.
+    </p>
+  </header>
+
+  <nav class="toc" aria-label="On this page">
+    <ol>
+      <li><a href="#start">Getting started</a></li>
+      <li><a href="#finding">Finding answers</a></li>
+      <li><a href="#answering">Answering</a></li>
+      <li><a href="#trust">Keeping answers trustworthy</a></li>
+      <li><a href="#duplicates">Avoiding duplicates</a></li>
+      <li><a href="#experts">People who may know</a></li>
+      <li><a href="#macro">Embedding in a page</a></li>
+      <li><a href="#health">Knowledge health</a></li>
+      <li><a href="#ai">AI assistance</a></li>
+      <li><a href="#permissions">Permissions and privacy</a></li>
+      <li><a href="#limits">Limits</a></li>
+    </ol>
+  </nav>
+
+  <article>
+
+    <section id="start">
+      <h2>Getting started</h2>
+      <p>
+        Open any Confluence space and click <strong>Questions</strong> in the space sidebar, then
+        <strong>Ask a question</strong>. Add a title, optional detail, and up to five tags.
+      </p>
+      <p>
+        The first question in a space creates a page called <strong>Questions</strong>. Every question
+        becomes a child of it, so you can browse them in the normal page tree as well as in Trove.
+      </p>
+      <div class="thesis">
+        <p>
+          Questions live inside a space, so they inherit that space&rsquo;s permissions. If someone
+          cannot read the space, they cannot see its questions &mdash; in Trove or anywhere else. There is
+          no separate permission model to configure or to get wrong.
+        </p>
+      </div>
+    </section>
+
+    <section id="finding">
+      <h2>Finding answers</h2>
+      <p>
+        <strong>Search reads the answers, not just the titles.</strong> Search for a word that appears only
+        inside a reply and the question still comes back, marked <em>found in an answer</em>.
+      </p>
+
+      <div class="demo">
+        <div>Search: <span class="q">wireguard-config</span></div>
+        <div style="margin-top:0.6rem">
+          <span class="q">How do I get on the VPN?</span> &nbsp;<span class="hit">found in an answer</span>
+        </div>
+        <div>&hellip;settings live in the <span class="hit">wireguard-config</span> file on the bastion&hellip;</div>
+        <div class="tag" style="margin-top:0.35rem">#vpn &nbsp; #networking &nbsp; 3 answers &middot; accepted</div>
+      </div>
+
+      <p>
+        Results are ranked so the obvious one is first: an exact title match, then a title that starts with
+        your words, then a title containing them, then question detail, then answer text.
+      </p>
+
+      <h3>Narrowing the list</h3>
+      <ul>
+        <li><strong>Newest, Active, Votes, Unanswered, Accepted.</strong> Unanswered is the queue of unmet need.</li>
+        <li><strong>Tags.</strong> Click a tag to filter, click again to clear.</li>
+        <li><strong>Combined filters.</strong> Ask for questions tagged <code>sso</code>, by one person, with at least one answer &mdash; all at once.</li>
+      </ul>
+    </section>
+
+    <section id="answering">
+      <h2>Answering</h2>
+      <p>
+        Answers use the standard Confluence editor &mdash; headings, lists, code blocks, links and inline
+        formatting. Because Confluence stores comments in that format natively, this is real Confluence
+        formatting: it renders correctly in Confluence itself, in exports and in notification emails,
+        whether or not Trove is installed.
+      </p>
+      <ul>
+        <li>Post an answer on any question.</li>
+        <li><strong>Vote</strong> for answers that helped. One vote per person; clicking again takes it back.</li>
+        <li>
+          <strong>Mark as accepted</strong> &mdash; anyone who can edit the page can do this, not only the
+          person who asked. That matters when the original asker has left the company.
+        </li>
+      </ul>
+    </section>
+
+    <section id="trust">
+      <h2>Keeping answers trustworthy</h2>
+      <p>
+        An accepted answer can be <strong>verified</strong>: a record of who confirmed it was still correct,
+        and when.
+      </p>
+      <p>
+        After 180 days without verification, an answer is labelled <em>not verified in N months</em>. It is
+        never hidden and never deleted. The label simply lets a reader tell the difference between
+        &ldquo;nobody has looked at this in a year&rdquo; and &ldquo;someone confirmed this last month&rdquo;.
+      </p>
+    </section>
+
+    <section id="duplicates">
+      <h2>Avoiding duplicates</h2>
+      <p>
+        While you type a question title, Trove shows <strong>similar questions</strong> with a match
+        percentage and whether they already have an accepted answer. Opening one of those is usually faster
+        than waiting for a reply.
+      </p>
+      <p>
+        If you ask a question whose title already exists, Trove opens the existing one instead of failing.
+      </p>
+    </section>
+
+    <section id="experts">
+      <h2>People who may know</h2>
+      <p>
+        Each question shows people who have demonstrably answered on that topic, with how many answers they
+        wrote and how many were accepted.
+      </p>
+      <div class="thesis">
+        <p>
+          Expertise is calculated from real activity only. An <strong>accepted</strong> answer counts most,
+          because it is the only signal where somebody other than the author judged the answer useful. Votes
+          count less. Raw volume counts least. There are no points and no leaderboard.
+        </p>
+      </div>
+      <p>
+        <strong>Ask this person</strong> posts a comment mentioning them, so Confluence notifies them the way
+        it normally does &mdash; through the channel they have already configured, not a second inbox to
+        check. Each person can be asked once per question, and the comment says why they were picked.
+      </p>
+    </section>
+
+    <section id="macro">
+      <h2>Embedding questions in a page</h2>
+      <p>
+        Insert the <strong>Questions</strong> macro on any Confluence page to show that space&rsquo;s recent
+        questions <strong>with their accepted answers inline</strong>.
+      </p>
+      <p>
+        This is the point of it: on an onboarding page or a team handbook, the reader gets the answer where
+        they already are, rather than a link telling them to go and find it.
+      </p>
+    </section>
+
+    <section id="health">
+      <h2>Knowledge health</h2>
+      <p>
+        For space admins. Every number expands into the questions behind it &mdash; a count you cannot click
+        through to is not actionable.
+      </p>
+      <ul>
+        <li>unanswered questions</li>
+        <li>questions with answers but nothing accepted</li>
+        <li>answers that have gone stale</li>
+        <li>clusters of likely duplicates</li>
+        <li>topics where nobody has an accepted answer yet</li>
+        <li>questions worth turning into articles</li>
+      </ul>
+
+      <h3>Convert to knowledge article</h3>
+      <p>
+        Turns a resolved question into a clean Confluence page with the problem, the accepted answer and its
+        verification status. It links back to the discussion rather than copying it, so there is one place to
+        correct if things change.
+      </p>
+
+      <h3>Rebuild from Confluence</h3>
+      <p>
+        Re-derives counts and tags from what actually exists. Because questions are ordinary pages, people
+        delete them in Confluence like anything else &mdash; this tidies up afterwards. It never deletes
+        anything itself.
+      </p>
+    </section>
+
+    <section id="ai">
+      <h2>AI assistance</h2>
+      <p>
+        Optional, and <strong>off by default</strong>. A space admin turns it on under Knowledge health.
+      </p>
+      <ul>
+        <li><strong>Ask company knowledge</strong> &mdash; ask in plain language, get an answer drawn from that space&rsquo;s questions.</li>
+        <li><strong>Suggest an answer</strong> &mdash; draft a reply to an unanswered question from what has already been answered.</li>
+      </ul>
+      <p>
+        Every AI answer is labelled, cites the questions it used, and shows a confidence based on how much
+        real evidence backed it. When the evidence is thin it says so plainly and offers to ask the community
+        instead.
+      </p>
+      <div class="thesis">
+        <p>
+          <strong>It only ever reads content you can already see.</strong> Context is fetched as you, so the
+          model cannot surface anything your Confluence permissions would not show you. Models are hosted by
+          Atlassian: no external API keys, and your content never leaves the Atlassian platform.
+        </p>
+      </div>
+      <p>
+        AI is off by default because model usage is billed to the app vendor, so switching it on is a
+        deliberate choice rather than something that happens quietly.
+      </p>
+    </section>
+
+    <section id="permissions">
+      <h2>Permissions and privacy</h2>
+      <p>
+        Trove stores no customer content outside Atlassian. There is no external server, no third-party data
+        processor, and no analytics service. Every Confluence call is made as the signed-in user.
+      </p>
+
+      <div class="table-scroll">
+        <table>
+          <caption class="visually-hidden"></caption>
+          <thead>
+            <tr><th scope="col">Permission</th><th scope="col">Why it is needed</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>read / write page</td><td>Questions are pages; so are the hub page and knowledge articles</td></tr>
+            <tr><td>delete page</td><td>Deleting your own question &mdash; Confluence decides who may</td></tr>
+            <tr><td>read / write comment</td><td>Answers and expert mentions are comments</td></tr>
+            <tr><td>read content-details</td><td>Full-text search across answers</td></tr>
+            <tr><td>read space</td><td>Resolving which space a question belongs to</td></tr>
+            <tr><td>read user</td><td>Showing people&rsquo;s names instead of account ids</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>What you keep</h3>
+      <p>Because questions are pages and answers are comments:</p>
+      <ul>
+        <li>Confluence <strong>search</strong> indexes them</li>
+        <li>Confluence <strong>export</strong> includes them</li>
+        <li>The Confluence <strong>REST API</strong> reads them</li>
+        <li>Confluence <strong>page history</strong> is your audit trail</li>
+        <li>Space <strong>permissions</strong> apply automatically</li>
+      </ul>
+      <p>If you ever uninstall Trove, every question and answer stays exactly where it is.</p>
+    </section>
+
+    <section id="limits">
+      <h2>Limits</h2>
+      <div class="note limits">
+        <p>Worth knowing before you roll it out:</p>
+        <p>
+          The list loads up to <strong>500 questions per space</strong>; beyond that, search and tag filters
+          find the rest. Question <em>detail</em> is plain text, though answers support full rich text. The
+          macro shows a space&rsquo;s recent questions; <strong>per-macro configuration</strong> is not yet
+          available.
+        </p>
+      </div>
+      <p>
+        Found a problem, or need something that is not here? Write to
+        <a href="mailto:troveappssupport@gmail.com">troveappssupport@gmail.com</a>. Expect a reply within two business days.
+      </p>
+    </section>
+
+  </article>
+
+  <footer>
+    <span>Trove &mdash; Questions &amp; Answers for Confluence</span>
+    <span>Built on Atlassian Forge &middot; Runs on Atlassian</span>
+  </footer>
+
+</div>
+</body>
+</html>

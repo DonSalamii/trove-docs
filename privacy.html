@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trove Privacy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap">
+
+<style>
+  /* ---------- tokens: light is the bare :root ---------- */
+  :root {
+    --ink:        #101a2e;
+    --ink-soft:   #43506b;
+    --ink-faint:  #6b7891;
+    --paper:      #fbfcfe;
+    --surface:    #ffffff;
+    --line:       #dde3ed;
+    --line-soft:  #eaeef5;
+    --navy:       #172b4d;
+    --green:      #1f8a5f;
+    --green-wash: #e8f5ef;
+    --amber:      #9a6206;
+    --amber-wash: #fbf1de;
+
+    --measure: 66ch;
+    --radius: 10px;
+
+    --step--1: clamp(0.82rem, 0.80rem + 0.10vw, 0.88rem);
+    --step-0:  clamp(1.00rem, 0.97rem + 0.16vw, 1.09rem);
+    --step-1:  clamp(1.22rem, 1.15rem + 0.32vw, 1.42rem);
+    --step-2:  clamp(1.55rem, 1.40rem + 0.70vw, 2.05rem);
+    --step-3:  clamp(2.10rem, 1.80rem + 1.40vw, 3.10rem);
+
+    color-scheme: light;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink:        #e7ecf5;
+      --ink-soft:   #a9b4c8;
+      --ink-faint:  #7c8798;
+      --paper:      #0d1420;
+      --surface:    #141d2b;
+      --line:       #26313f;
+      --line-soft:  #1c2532;
+      --navy:       #cfd9e8;
+      --green:      #4cc38a;
+      --green-wash: #14291f;
+      --amber:      #d9a441;
+      --amber-wash: #2a2313;
+      color-scheme: dark;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ink:        #e7ecf5;
+    --ink-soft:   #a9b4c8;
+    --ink-faint:  #7c8798;
+    --paper:      #0d1420;
+    --surface:    #141d2b;
+    --line:       #26313f;
+    --line-soft:  #1c2532;
+    --navy:       #cfd9e8;
+    --green:      #4cc38a;
+    --green-wash: #14291f;
+    --amber:      #d9a441;
+    --amber-wash: #2a2313;
+    color-scheme: dark;
+  }
+
+  /* ---------- base ---------- */
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: var(--step-0);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 clamp(1.25rem, 4vw, 3rem) 6rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  @media (min-width: 950px) {
+    .wrap {
+      grid-template-columns: 210px minmax(0, 1fr);
+      align-items: start;
+      gap: 4rem;
+    }
+  }
+
+  /* ---------- masthead ---------- */
+  .masthead {
+    grid-column: 1 / -1;
+    padding: clamp(3rem, 8vw, 5.5rem) 0 clamp(2rem, 4vw, 3rem);
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .mark {
+    width: 38px;
+    height: 38px;
+    flex: none;
+    border-radius: 9px;
+    background: var(--navy);
+    display: grid;
+    place-items: center;
+  }
+
+  :root[data-theme="dark"] .mark,
+  :root:not([data-theme="light"]) .mark { background: #172b4d; }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) .mark { background: var(--navy); }
+  }
+
+  .mark svg { display: block; }
+
+  .brand-name {
+    font-family: "IBM Plex Sans", sans-serif;
+    font-weight: 600;
+    font-size: var(--step--1);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  h1 {
+    font-family: Literata, Georgia, "Times New Roman", serif;
+    font-weight: 600;
+    font-size: var(--step-3);
+    line-height: 1.08;
+    letter-spacing: -0.015em;
+    margin: 0;
+    text-wrap: balance;
+    max-width: 18ch;
+  }
+
+  .standfirst {
+    font-size: var(--step-1);
+    line-height: 1.5;
+    color: var(--ink-soft);
+    max-width: 52ch;
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  /* ---------- side nav ---------- */
+  nav.toc { display: none; }
+
+  @media (min-width: 950px) {
+    nav.toc {
+      display: block;
+      position: sticky;
+      top: 2.5rem;
+      padding-top: 3rem;
+    }
+    nav.toc ol {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      border-left: 1px solid var(--line);
+    }
+    nav.toc a {
+      display: block;
+      padding: 0.1rem 0 0.1rem 1rem;
+      margin-left: -1px;
+      border-left: 2px solid transparent;
+      font-size: var(--step--1);
+      color: var(--ink-faint);
+      text-decoration: none;
+      line-height: 1.35;
+    }
+    nav.toc a:hover,
+    nav.toc a:focus-visible {
+      color: var(--ink);
+      border-left-color: var(--green);
+    }
+  }
+
+  /* ---------- article ---------- */
+  article { padding-top: 3rem; min-width: 0; }
+
+  section + section { margin-top: 3.5rem; }
+
+  h2 {
+    font-family: Literata, Georgia, serif;
+    font-weight: 600;
+    font-size: var(--step-2);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    margin: 0 0 1rem;
+    text-wrap: balance;
+    scroll-margin-top: 2rem;
+  }
+
+  h3 {
+    font-family: "IBM Plex Sans", sans-serif;
+    font-weight: 600;
+    font-size: var(--step-0);
+    margin: 2rem 0 0.5rem;
+    color: var(--ink);
+  }
+
+  p, li { max-width: var(--measure); }
+  p { margin: 0 0 1rem; text-wrap: pretty; }
+
+  ul { padding-left: 1.15rem; margin: 0 0 1rem; }
+  li { margin-bottom: 0.5rem; }
+  li::marker { color: var(--ink-faint); }
+
+  strong { font-weight: 600; }
+
+  a { color: var(--green); text-underline-offset: 2px; }
+
+  code {
+    font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.88em;
+    background: var(--line-soft);
+    padding: 0.12em 0.38em;
+    border-radius: 4px;
+  }
+
+  /* ---------- the one accent: the product's thesis ---------- */
+  .thesis {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--green);
+    border-radius: var(--radius);
+    padding: 1.5rem 1.6rem;
+    margin: 1.5rem 0;
+    max-width: var(--measure);
+  }
+  .thesis p:last-child { margin-bottom: 0; }
+
+  .hit {
+    background: var(--green-wash);
+    color: var(--green);
+    font-weight: 500;
+    padding: 0.08em 0.3em;
+    border-radius: 3px;
+  }
+
+  .demo {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: var(--step--1);
+    line-height: 1.7;
+    color: var(--ink-soft);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1.1rem 1.25rem;
+    margin: 1.25rem 0;
+    max-width: var(--measure);
+    overflow-x: auto;
+  }
+  .demo .q { color: var(--ink); font-weight: 500; }
+  .demo .tag {
+    color: var(--ink-faint);
+  }
+
+  /* ---------- callout ---------- */
+  .note {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    padding: 1.15rem 1.3rem;
+    margin: 1.5rem 0;
+    max-width: var(--measure);
+    font-size: var(--step--1);
+    color: var(--ink-soft);
+  }
+  .note p:last-child { margin-bottom: 0; }
+  .note strong { color: var(--ink); }
+
+  .note.limits { border-left: 3px solid var(--amber); background: var(--amber-wash); }
+  :root[data-theme="dark"] .note.limits,
+  :root:not([data-theme="light"]) .note.limits { color: var(--ink-soft); }
+
+  /* ---------- table ---------- */
+  .table-scroll { overflow-x: auto; max-width: var(--measure); margin: 1.25rem 0; }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: var(--step--1);
+  }
+  th, td {
+    text-align: left;
+    padding: 0.6rem 1rem 0.6rem 0;
+    border-bottom: 1px solid var(--line-soft);
+    vertical-align: top;
+  }
+  th {
+    font-weight: 600;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    font-size: 0.72rem;
+    border-bottom-color: var(--line);
+  }
+  td:first-child {
+    font-family: "IBM Plex Mono", monospace;
+    color: var(--ink);
+    white-space: nowrap;
+    padding-right: 1.5rem;
+  }
+
+  /* ---------- footer ---------- */
+  footer {
+    grid-column: 1 / -1;
+    margin-top: 5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--line);
+    color: var(--ink-faint);
+    font-size: var(--step--1);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 2rem;
+    justify-content: space-between;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 3px;
+    border-radius: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  }
+
+  html { scroll-behavior: smooth; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="brand">
+      <span class="mark" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 512 512" fill="none">
+          <circle cx="226" cy="226" r="150" fill="#ffffff"/>
+          <circle cx="226" cy="226" r="110" fill="#172b4d"/>
+          <path d="M164 230 L210 278 L294 176" stroke="#36B37E" stroke-width="38" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <path d="M322 322 L430 430" stroke="#ffffff" stroke-width="56" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="brand-name">Trove for Confluence</span>
+    </div>
+
+    <h1>Privacy and data handling</h1>
+
+    <p class="standfirst">
+      The short version: Trove stores nothing outside Atlassian, and it can only ever read what you can
+      already read. Last updated 28 August 2026.
+    </p>
+  </header>
+
+  <nav class="toc" aria-label="On this page">
+    <ol>
+      <li><a href="#where">Where your content lives</a></li>
+      <li><a href="#access">What the app can see</a></li>
+      <li><a href="#ai">Optional AI features</a></li>
+      <li><a href="#collect">What we collect about you</a></li>
+      <li><a href="#subprocessors">Sub-processors</a></li>
+      <li><a href="#retention">Retention and deletion</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ol>
+  </nav>
+
+  <article>
+
+    <section id="where">
+      <h2>Where your content lives</h2>
+
+      <div class="thesis">
+        <p>
+          <strong>Trove stores no customer content outside Atlassian.</strong> There is no server of ours,
+          no database of ours, no third-party data processor, and no analytics service.
+        </p>
+      </div>
+
+      <p>Everything the app creates is ordinary Confluence content in your own site:</p>
+      <ul>
+        <li>a <strong>question</strong> is a Confluence page</li>
+        <li>an <strong>answer</strong> is a comment on that page</li>
+        <li>votes, tags, accepted-answer and verification markers are Confluence <strong>content properties</strong> on those pages</li>
+      </ul>
+      <p>
+        If you uninstall Trove, all of it stays exactly where it is. Nothing is exported, copied or retained
+        anywhere else, because there is nowhere else.
+      </p>
+
+      <h3>Where the code runs</h3>
+      <p>
+        Trove runs on Atlassian Forge, so its code executes on Atlassian infrastructure rather than on
+        infrastructure operated by us. The app is eligible for Atlassian&rsquo;s
+        <strong>Runs on Atlassian</strong> programme, which certifies that app data stays within the
+        Atlassian platform.
+      </p>
+    </section>
+
+    <section id="access">
+      <h2>What the app can see</h2>
+      <p>
+        Every Confluence call Trove makes is made <strong>as the signed-in user</strong>. The practical
+        consequence matters more than the wording: the app cannot show anyone content their own Confluence
+        permissions would not already show them. There is no separate permission system to misconfigure,
+        and no way for the app to widen anyone&rsquo;s access.
+      </p>
+
+      <h3>Permissions requested, and why</h3>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr><th scope="col">Permission</th><th scope="col">Why it is needed</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>read:page</td><td>Reading questions and the per-space Questions page</td></tr>
+            <tr><td>write:page</td><td>Creating questions, the Questions page, and knowledge articles</td></tr>
+            <tr><td>delete:page</td><td>Deleting a question &mdash; Confluence decides who may, and it goes to the space trash</td></tr>
+            <tr><td>read:comment</td><td>Reading answers</td></tr>
+            <tr><td>write:comment</td><td>Posting answers, and mentioning someone when they are asked to help</td></tr>
+            <tr><td>read:content-details</td><td>Full-text search across answers</td></tr>
+            <tr><td>read:space</td><td>Resolving which space a question belongs to</td></tr>
+            <tr><td>read:user</td><td>Showing display names instead of account ids</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="ai">
+      <h2>Optional AI features</h2>
+      <p>
+        AI assistance is <strong>disabled by default</strong> and is enabled per space by an administrator.
+        While it is off, no AI call is ever made.
+      </p>
+      <p>When it is on:</p>
+      <ul>
+        <li>
+          Models are <strong>hosted by Atlassian</strong> through the Forge LLMs API. There is no external
+          API key and your content does not leave the Atlassian platform.
+        </li>
+        <li>
+          Context is gathered <strong>as the signed-in user</strong>, so the model cannot be given content
+          that person could not read themselves.
+        </li>
+        <li>
+          Answers are labelled as AI-generated, cite the questions they drew on, and show a confidence based
+          on how much real evidence supported them.
+        </li>
+        <li>
+          Nothing is used to train any model, and no prompt or response is retained by us &mdash; we operate
+          no storage in which to retain it.
+        </li>
+      </ul>
+    </section>
+
+    <section id="collect">
+      <h2>What we collect about you</h2>
+      <div class="thesis">
+        <p><strong>Nothing.</strong> Trove has no telemetry, no analytics and no tracking of any kind.</p>
+      </div>
+      <p>
+        We receive only what Atlassian shows any Marketplace vendor: aggregate install and licence
+        information through the partner portal. We do not see your questions, your answers, or who wrote
+        them.
+      </p>
+      <p>
+        The only personal data the app handles is the Atlassian account id and display name of people
+        already participating in your site, used to attribute answers and show names rather than raw ids
+        &mdash; and that data stays in your Confluence.
+      </p>
+    </section>
+
+    <section id="subprocessors">
+      <h2>Sub-processors</h2>
+      <p>
+        <strong>None.</strong> Because the app stores and processes nothing outside Atlassian, there are no
+        sub-processors to list. Atlassian is the sole processor of any content the app touches, under your
+        existing agreement with them.
+      </p>
+    </section>
+
+    <section id="retention">
+      <h2>Retention and deletion</h2>
+      <p>
+        Retention is governed entirely by your Confluence, because that is where the content lives. Deleting
+        a question sends the page to your space trash, from which your administrators can restore or purge
+        it under your own policies.
+      </p>
+      <p>
+        Uninstalling the app removes the app, not your content. Questions and answers remain as ordinary
+        Confluence pages and comments.
+      </p>
+    </section>
+
+    <section id="contact">
+      <h2>Contact</h2>
+      <p>
+        Questions about this policy, a data request, or a security concern:
+        <a href="mailto:troveappssupport@gmail.com">troveappssupport@gmail.com</a>. We aim to reply within two business
+        days.
+      </p>
+      <p>
+        If you believe you have found a security vulnerability, please write to the same address with the
+        details and allow a reasonable window for a fix before disclosing it publicly.
+      </p>
+    </section>
+
+  </article>
+
+  <footer>
+    <span>Trove &mdash; Questions &amp; Answers for Confluence</span>
+    <span>Built on Atlassian Forge &middot; Runs on Atlassian</span>
+  </footer>
+
+</div>
+</body>
+</html>
