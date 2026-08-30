@@ -13,7 +13,7 @@ answer, that is a gap — open an issue labelled `ask-engineering`.
 
 ### "Search doesn't find something I know is there"
 
-Three real causes, in order of likelihood.
+Four real causes, in order of likelihood.
 
 **1. The content is minutes old.** Confluence's CQL index is eventually
 consistent. Recently created questions and answers are not immediately
@@ -30,20 +30,20 @@ prefix, then title contains, then question body, then answer text. A term that
 appears only in an answer ranks last and is marked "found in an answer".
 → *Tell them:* scroll further, and look for the "found in an answer" badge.
 
-**4. The space is busy and the term is common elsewhere.** *(known defect, fix
-pending)* Answer search asks Confluence for comments matching the term across
-everything the user can read, takes the first 50 results, then keeps only those
-belonging to Trove questions. In a large Confluence full of ordinary pages and
-comments, unrelated matches fill those 50 slots and the real answer never makes
-the cut — so the search returns nothing at all.
+**4. The space is busy and the term is common elsewhere.** *(known defect, fixed
+in code, waiting on a release)* Answer search asked Confluence for comments
+matching the term across everything the user can read, took the first 50 results,
+then kept only those belonging to Trove questions. In a large Confluence full of
+ordinary pages and comments, unrelated matches fill those 50 slots and the real
+answer never makes the cut — so the search returns nothing at all.
 
 Recognise it by elimination: the content is days old, the user can open the page,
 and they get **zero** results rather than a badly ranked one. That combination is
 this defect, not the three causes above. The bigger and busier the Confluence, the
 more likely it is, so enterprise customers hit it first.
-→ *Tell them:* this is a known defect in how answer search is scoped, engineering
-has it, and a fix is on the way. Searching a word from the question title still
-works in the meantime, because title search is unaffected.
+→ *Tell them:* this is a known defect in how answer search was scoped, it is fixed
+and waiting on a release, and searching a word from the question title still works
+in the meantime, because title search is unaffected. Do not give a date.
 
 **Not a cause:** Trove not indexing answers. It does. That is the product's
 central feature — cause 4 is the search being scoped too broadly, not answers
@@ -107,11 +107,24 @@ Per-macro configuration does not exist yet.
 - **No penetration test, no SOC 2, no ISO 27001.** Say so plainly if asked.
 - Interface is **English only**.
 
-## Known open defect
+## Known defects
 
-On the **Knowledge health** screen, the "Worth turning into articles" list renders
-centre-aligned instead of left-aligned. Cosmetic, fix pending a release.
-→ If someone reports it: confirm it is known and being fixed.
+Every entry here is tracked as an engineering issue. Nothing goes in this section
+without one — a defect documented here and quoted to a customer, with nothing
+tracking it, is how a promise gets made that no one is keeping.
+
+**Answer search returns nothing in busy instances.** Cause 4 above. The comment
+query was not scoped to the space and its results were cut to 50 before Trove
+filtered them, so unrelated comments crowded the match out. Now scoped to the
+space, and the results are paged and filtered as they arrive. Fixed in code,
+**waiting on a release**.
+→ If someone reports it: confirm it is known and fixed, no date. Title search
+works in the meantime.
+
+**"Worth turning into articles" list is centre-aligned.** On the **Knowledge
+health** screen, that list renders centre-aligned instead of left-aligned.
+Cosmetic. Fixed in code, **waiting on a release**.
+→ If someone reports it: confirm it is known and being fixed, no date.
 
 ---
 
