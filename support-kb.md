@@ -94,6 +94,22 @@ Answers support full rich text through the standard Confluence editor. The
 The macro shows the space's recent questions with their accepted answers inline.
 Per-macro configuration does not exist yet.
 
+### "How do we get our content out / can we export it?"
+
+Asked before a rollout or a security review, not after a problem. The answer is
+architectural and it is a good one, so give it plainly.
+
+Everything Trove stores is ordinary Confluence content: a question is a Confluence
+page, an answer is a comment on it. A normal Confluence space export takes all of
+it, the REST API sees all of it, and uninstalling Trove leaves every question and
+answer where it is. There is no separate Trove database to export from and nothing
+to migrate out of.
+→ *Tell them:* exactly that. Do not send them looking for an export button inside
+Trove — there isn't one and there does not need to be.
+
+**Known gap:** nothing on the **Knowledge health** screen says this, which is
+where people look first. *(engineering issue 3)*
+
 ---
 
 ## Current limits — do not promise around these
@@ -109,11 +125,14 @@ Per-macro configuration does not exist yet.
 
 ## Known defects
 
-Every entry here is tracked as an engineering issue. Nothing goes in this section
-without one — a defect documented here and quoted to a customer, with nothing
-tracking it, is how a promise gets made that no one is keeping.
+Every entry here names the engineering issue tracking it. Nothing goes in this
+section without one — a defect documented here and quoted to a customer, with
+nothing tracking it, is how a promise gets made that no one is keeping. An entry
+that has no issue yet says `known defect, no owner yet` and claims nothing about
+the state of the work.
 
-**Answer search returns nothing in busy instances.** Cause 4 above. The comment
+**Answer search returns nothing in busy instances.** *(engineering issue 2)*
+Cause 4 above. The comment
 query was not scoped to the space and its results were cut to 50 before Trove
 filtered them, so unrelated comments crowded the match out. Now scoped to the
 space, and the results are paged and filtered as they arrive. Fixed in code,
@@ -121,8 +140,8 @@ space, and the results are paged and filtered as they arrive. Fixed in code,
 → If someone reports it: confirm it is known and fixed, no date. Title search
 works in the meantime.
 
-**"Worth turning into articles" list is centre-aligned.** On the **Knowledge
-health** screen, that list renders centre-aligned instead of left-aligned.
+**"Worth turning into articles" list is centre-aligned.** *(engineering issue 5)*
+On the **Knowledge health** screen, that list renders centre-aligned instead of left-aligned.
 Cosmetic. Fixed in code, **waiting on a release**.
 → If someone reports it: confirm it is known and being fixed, no date.
 
