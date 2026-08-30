@@ -30,8 +30,24 @@ prefix, then title contains, then question body, then answer text. A term that
 appears only in an answer ranks last and is marked "found in an answer".
 → *Tell them:* scroll further, and look for the "found in an answer" badge.
 
+**4. The space is busy and the term is common elsewhere.** *(known defect, fix
+pending)* Answer search asks Confluence for comments matching the term across
+everything the user can read, takes the first 50 results, then keeps only those
+belonging to Trove questions. In a large Confluence full of ordinary pages and
+comments, unrelated matches fill those 50 slots and the real answer never makes
+the cut — so the search returns nothing at all.
+
+Recognise it by elimination: the content is days old, the user can open the page,
+and they get **zero** results rather than a badly ranked one. That combination is
+this defect, not the three causes above. The bigger and busier the Confluence, the
+more likely it is, so enterprise customers hit it first.
+→ *Tell them:* this is a known defect in how answer search is scoped, engineering
+has it, and a fix is on the way. Searching a word from the question title still
+works in the meantime, because title search is unaffected.
+
 **Not a cause:** Trove not indexing answers. It does. That is the product's
-central feature.
+central feature — cause 4 is the search being scoped too broadly, not answers
+going unindexed.
 
 ### "The question I posted disappeared / went somewhere else"
 
